@@ -1,0 +1,101 @@
+---
+# title: |
+#   ![](logo.png){width=5in}
+title: "Reproducible report"
+   
+# author: "Alessandro"
+# date: '2022-05-01
+output: 
+  html_document:
+    theme: darkly
+    highlight: zenburn
+    toc: True
+    toc_float: True
+---
+
+```{r, echo=FALSE}
+htmltools::img(src = "logo.png", 
+                alt = 'logo', 
+                style = 'position:absolute; top:0; right:0; padding:10px; width: 40%; height: auto')
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyr)
+library(zoo)
+library(ggplot2)
+library(tidyr)
+# library(ggtext)
+```
+
+``` {r darkmode, echo = FALSE}
+theme_darkmode <- function(bg ="#000000", primary="#FFFFFF", secondary="#888888"){ # create Theme
+  theme_gray() %+replace%
+  theme(
+    text = element_text(family = "montserrat"),
+    axis.title.y = element_text(color = secondary, angle=90),
+    axis.text = element_text(color=secondary, size=rel(0.8)),
+    axis.ticks = element_blank(),
+    legend.text = element_text(color=primary, size=rel(0.8)),
+    panel.grid.major = element_line(color =secondary, size=0.25),
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill=bg, color=NA),
+    plot.background = element_rect(fill=bg, color=NA),
+    legend.background = element_rect(fill=bg, color=NA),
+    legend.key = element_rect(fill = bg, color = NA)
+  )
+}
+```
+
+## Currencies exchage rates
+
+Some text... blablabla
+
+```{r currencies, echo = FALSE,  include = FALSE}
+curr <- data.frame(read.csv("Data pack/CurrencyExchangeRates.csv")) # read Data
+
+curr <- curr %>%  select(Date, Euro, Polish.Zloty) %>% # tidy Data up
+   replace(is.na(.), 0) %>%
+  mutate(year = format(as.Date(Date), '%Y')) %>%
+    group_by(year) %>%
+    summarise_at(vars(Euro, Polish.Zloty), list(mean)) %>%
+    filter(Euro > 0 & Polish.Zloty > 0) %>%
+    pivot_longer(cols=c(Euro, Polish.Zloty), names_to = "currency", values_to = "rate")
+```
+
+```{r currecies_plot, echo = FALSE}
+ggplot(curr, aes(x = year, y = rate, color = currency, group=currency)) + # make plot
+  geom_line() +
+  labs(title="One USD in different currecies",
+    x = "Year", y = "",
+    color = "") +
+  theme_darkmode(bg = "#222222", secondary = "#e5f5f9") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    legend.position = "top",
+    title = element_text(colour = "#ffffbf")) +
+    scale_color_manual(values=c('#91bfdb','#fc8d59'))
+```
+
+Some observations... blablabla
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
