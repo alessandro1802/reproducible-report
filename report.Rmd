@@ -79,6 +79,19 @@ ggplot(curr, aes(x = year, y = rate, color = currency, group=currency)) + # make
 
 It cab be clearly seen that Euro was much more stable than Polish Zloty.
 
+## Gold prices
+
+blablabla
+
+```{r gold, echo = FALSE,  include = FALSE}
+gold <- data.frame(read.csv("Data pack/Gold prices.csv")) # read Data
+
+gold <- gold %>% 
+  replace(is.na(.), 0) %>%
+  filter_all(all_vars(. > 0))
+head(gold)
+```
+
 
 ## R Markdown
 
