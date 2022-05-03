@@ -92,8 +92,14 @@ gold <- data.frame(read.csv("Data pack/Gold prices.csv")) # read Data
 
 gold <- gold %>% 
   replace(is.na(.), 0) %>%
-  filter_all(all_vars(. > 0))
-head(gold)
+  filter_all(all_vars(. > 0)) %>%
+  mutate(USD = paste(USD..AM., USD..PM.),
+         GBR = paste(GBP..AM., GBP..PM.),
+         EURO = paste(EURO..AM., EURO..PM.), 
+         .keep="unused") %>%
+  pivot_longer(cols=c(USD, GBR, EURO), names_to = "currency", values_to = "AMPM") %>%
+  separate(AMPM, c("AM", "PM"), sep = " ", remove = TRUE) %>%
+  mutate(diff = abs(1 - as.numeric(AM)/as.numeric(PM)), avg = (as.numeric(AM)+as.numeric(PM))/2)
 ```
 
 
