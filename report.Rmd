@@ -56,12 +56,12 @@ The plot below shows how much of differents currencies could be bought for 1 US 
 curr <- data.frame(read.csv("Data pack/CurrencyExchangeRates.csv")) # read Data
 
 curr <- curr %>%  select(Date, Euro, Polish.Zloty) %>% # tidy Data up
-   replace(is.na(.), 0) %>%
+  replace(is.na(.), 0) %>%
+  filter(Euro > 0 & Polish.Zloty > 0) %>%
   mutate(year = format(as.Date(Date), '%Y')) %>%
-    group_by(year) %>%
-    summarise_at(vars(Euro, Polish.Zloty), list(mean)) %>%
-    filter(Euro > 0 & Polish.Zloty > 0) %>%
-    pivot_longer(cols=c(Euro, Polish.Zloty), names_to = "currency", values_to = "rate")
+  group_by(year) %>%
+  summarise_at(vars(Euro, Polish.Zloty), list(mean)) %>%
+  pivot_longer(cols=c(Euro, Polish.Zloty), names_to = "currency", values_to = "rate")
 ```
 
 ```{r currecies_plot, echo = FALSE}
