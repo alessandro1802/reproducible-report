@@ -99,8 +99,32 @@ gold <- gold %>%
          .keep="unused") %>%
   pivot_longer(cols=c(USD, GBR, EURO), names_to = "currency", values_to = "AMPM") %>%
   separate(AMPM, c("AM", "PM"), sep = " ", remove = TRUE) %>%
-  mutate(diff = abs(1 - as.numeric(AM)/as.numeric(PM)), avg = (as.numeric(AM)+as.numeric(PM))/2)
+  mutate(diff = abs(1 - as.numeric(AM)/as.numeric(PM)), avg = (as.numeric(AM)+as.numeric(PM))/2) %>%
+  mutate(year = format(as.Date(Date), '%Y'), month = format(as.Date(Date), '%m')) %>%
+  group_by(month, year, currency) %>%
+  summarise_at(vars(diff, avg), list(mean)) %>%
+  mutate(Date = as.Date(paste(year, month, 01), "%Y %m %d"))
+head(gold)
 ```
+
+```{r gold_plot, echo = FALSE}
+# ggplot(gold, aes(x = Date, y = avg, fill = currency)) + # make plot
+#   geom_bar(position="stack", stat="identity")
+
+ggplot(gold, aes(x = Date, y = avg, fill = diff)) + # make plot
+  geom_bar(stat="identity") +
+  facet_grid(currency ~ .) +
+  theme_darkmode(bg = "#222222", secondary = "#e5f5f9") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    # legend.position = "top",
+    title = element_text(colour = "#ffffbf")) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  labs(title="Gold prices",
+    x = "Year", y = "") +
+  scale_fill_gradient(name = "Average daily\ndifference in %",
+                      low = "#4575b4", high = "#d73027", limits = c(0, 0.02))
+```
+
 
 
 ## R Markdown
