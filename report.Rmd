@@ -50,7 +50,7 @@ theme_darkmode <- function(bg ="#000000", primary="#FFFFFF", secondary="#888888"
 
 ## Currencies exchage rates
 
-Some text... blablabla
+The plot below shows how much of differents currencies could be bought for 1 US dollar throughout years.
 
 ```{r currencies, echo = FALSE,  include = FALSE}
 curr <- data.frame(read.csv("Data pack/CurrencyExchangeRates.csv")) # read Data
@@ -77,7 +77,7 @@ ggplot(curr, aes(x = year, y = rate, color = currency, group=currency)) + # make
     scale_color_manual(values=c('#91bfdb','#fc8d59'))
 ```
 
-Some observations... blablabla
+It cab be clearly seen that Euro was much more stable than Polish Zloty.
 
 
 ## R Markdown
