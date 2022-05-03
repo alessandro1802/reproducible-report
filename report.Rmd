@@ -58,14 +58,16 @@ curr <- data.frame(read.csv("Data pack/CurrencyExchangeRates.csv")) # read Data
 curr <- curr %>%  select(Date, Euro, Polish.Zloty) %>% # tidy Data up
   replace(is.na(.), 0) %>%
   filter(Euro > 0 & Polish.Zloty > 0) %>%
-  mutate(year = format(as.Date(Date), '%Y')) %>%
-  group_by(year) %>%
+  mutate(year = format(as.Date(Date), '%Y'), month = format(as.Date(Date), '%m')) %>%
+  group_by(month, year) %>%
   summarise_at(vars(Euro, Polish.Zloty), list(mean)) %>%
-  pivot_longer(cols=c(Euro, Polish.Zloty), names_to = "currency", values_to = "rate")
+  pivot_longer(cols=c(Euro, Polish.Zloty), names_to = "currency", values_to = "rate") %>%
+  mutate( Ym = as.Date(paste(year, month, 01), "%Y %m %d"))
+head(curr)
 ```
 
 ```{r currecies_plot, echo = FALSE}
-ggplot(curr, aes(x = year, y = rate, color = currency, group=currency)) + # make plot
+ggplot(curr, aes(x = Ym, y = rate, color = currency, group=currency)) + # make plot
   geom_line() +
   labs(title="One USD in different currecies",
     x = "Year", y = "",
@@ -74,7 +76,8 @@ ggplot(curr, aes(x = year, y = rate, color = currency, group=currency)) + # make
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
     legend.position = "top",
     title = element_text(colour = "#ffffbf")) +
-    scale_color_manual(values=c('#91bfdb','#fc8d59'))
+    scale_color_manual(values=c('#91bfdb','#fc8d59')) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y")
 ```
 
 It cab be clearly seen that Euro was much more stable than Polish Zloty.
